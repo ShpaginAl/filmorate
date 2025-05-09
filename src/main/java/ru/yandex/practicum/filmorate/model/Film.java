@@ -15,18 +15,32 @@ public class Film {
     @NotNull(message = "При обновлении ресурса id не может быть нулевым", groups = ValidationGroups.UpdateGroup.class)
     private int id;
 
-    @NotBlank (message = "Название не может быть пустым", groups = {ValidationGroups.CreateGroup.class, ValidationGroups.UpdateGroup.class})
+    @NotBlank(message = "Название не может быть пустым", groups = {ValidationGroups.CreateGroup.class, ValidationGroups.UpdateGroup.class})
     private String name;
 
-    @NotBlank (message = "описание не может быть пустым", groups = {ValidationGroups.CreateGroup.class, ValidationGroups.UpdateGroup.class})
+    @NotBlank(message = "описание не может быть пустым", groups = {ValidationGroups.CreateGroup.class, ValidationGroups.UpdateGroup.class})
     @Size(message = "Максимальная длина описания - 200 символов", max = 200, groups = {ValidationGroups.CreateGroup.class, ValidationGroups.UpdateGroup.class})
     private String description;
 
-    @NotNull
+    @NotNull(message = "Дата релиза должна быть")
     private LocalDate releaseDate;
 
     @Positive(message = "продолжительность фильма должна быть положительным числом", groups = {ValidationGroups.CreateGroup.class, ValidationGroups.UpdateGroup.class})
     private int duration;
 
 
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+    }
+
+    public Film(int id, String name, String description, int duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+    }
 }

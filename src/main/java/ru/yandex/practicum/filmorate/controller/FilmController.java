@@ -49,7 +49,7 @@ public class FilmController {
             }
             Film oldFilm = listOfFilms.get(newFilm.getId());
             oldFilm.setName(newFilm.getName());
-            log.info("Обновлено название фильма c {} на {}",oldFilm.getName(), newFilm.getName());
+            log.info("Обновлено название фильма c {} на {}", oldFilm.getName(), newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
             log.info("Обновлено описание фильма c {} на {}", oldFilm.getDescription(), newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
