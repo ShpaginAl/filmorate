@@ -44,13 +44,10 @@ public class UserController {
         if (listOfUsers.containsKey(newUser.getId())) {
             User oldUser = listOfUsers.get(newUser.getId());
             oldUser.setName(newUser.getName());
-            log.info("Обновлено имя пользователя c {} на {}", oldUser.getName(), newUser.getName());
             oldUser.setEmail(newUser.getEmail());
-            log.info("Обновлена почта пользователя c {} на {}", oldUser.getEmail(), newUser.getEmail());
             oldUser.setBirthday(newUser.getBirthday());
-            log.info("Обновлена дата рождения пользователя c {} на {}", oldUser.getBirthday(), newUser.getBirthday());
             oldUser.setLogin(newUser.getLogin());
-            log.info("Обновлен логин пользователя c {} на {}", oldUser.getLogin(), newUser.getLogin());
+            log.info("Обновлен пользователь. Было {}, стало {}", oldUser, newUser);
             return newUser;
         }
         log.error("В списке нет автора с id {}", newUser.getId());
