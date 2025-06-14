@@ -1,65 +1,67 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.annotations.ValidationGroups;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+
 
 import java.util.Collection;
-import java.util.HashMap;
 
 
 @Validated
 @RestController
+@RequestMapping("/users")
 public class UserController {
-    private HashMap<Integer, User> listOfUsers = new HashMap<>();
-    private final static Logger log = LoggerFactory.getLogger(UserController.class);
+    UserService userService;
 
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping
     public Collection<User> getAllUsers() {
-        return listOfUsers.values();
+        return userService.getAllUsers();
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.POST)
+    @PostMapping
     @Validated(ValidationGroups.CreateGroup.class)
-    public User createUser(@Valid @RequestBody User user) {
-        if (user.getName() == null) {
-            log.info("Так как имя пользователя пустое, то имя = логину");
-            user.setName(user.getLogin());
-        }
-        user.setId(getNextId());
-        log.info("Пользователю присвоен айди {}", user.getId());
-        listOfUsers.put(user.getId(), user);
-        log.info("Пользователь {} добавлен в список", user);
-        return user;
+    public User createUser(@RequestBody @Valid User user) {
+        return userService.createUser(user);
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.PUT)
+    @PutMapping
     @Validated(ValidationGroups.UpdateGroup.class)
-    public User updateUser(@Valid @RequestBody User newUser) {
-        if (listOfUsers.containsKey(newUser.getId())) {
-            User oldUser = listOfUsers.get(newUser.getId());
-            oldUser.setName(newUser.getName());
-            oldUser.setEmail(newUser.getEmail());
-            oldUser.setBirthday(newUser.getBirthday());
-            oldUser.setLogin(newUser.getLogin());
-            log.info("Обновлен пользователь. Было {}, стало {}", oldUser, newUser);
-            return newUser;
-        }
-        log.error("В списке нет автора с id {}", newUser.getId());
-        throw new NotFoundException("Автора с айди" + newUser.getId() + "нет в списке");
+    public User updateUser(@RequestBody @Valid User newUser) {
+        return userService.updateUser(newUser);
     }
 
-    private int getNextId() {
-        int currentMaxId = listOfUsers.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @GetMapping("/{id}")
+    public User findById(int id) {
+        return userService.findUserById(id);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addToFriend(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
+        userService.addFriend(userId, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFromFriends(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
+        userService.deleteFriend(userId, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Collection<User> listOfFriends(@PathVariable("id") int userId) {
+        return userService.showListOfFriends(userId);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<User> listOfCommonFriends(@PathVariable("id") int userId, @PathVariable("otherId") int otherId) {
+        return userService.showListOfCommonFriends(userId, otherId);
     }
 }
