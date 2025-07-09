@@ -1,6 +1,6 @@
 # Filmorate Project
 
-![ER Diagram](docs/ER film user.png)
+![ER Diagram](docs/er.png)
 
 Несколько запросов:
 1) Выводит названия фильмов и количество лайков, отсортированные по популярности.
