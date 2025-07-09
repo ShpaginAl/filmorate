@@ -56,7 +56,7 @@ public class UserTest {
 
     @Test
     void loginCannotBeNullAndBlank() {
-        User user = new User(1, "fwf@mail.ru", "buba", LocalDate.of(2010, 11, 25));
+        User user = new User(1, "fwf@mail.ru", "ekfelw fewf", "buba", LocalDate.of(2010, 11, 25));
         Set<ConstraintViolation<User>> violations = validator.validate(user, Default.class, ValidationGroups.UpdateGroup.class, ValidationGroups.CreateGroup.class);
         assertThat(violations).hasSize(2);
         assertThat(violations).extracting(ConstraintViolation::getMessage).contains("Логин не может быть пустым");

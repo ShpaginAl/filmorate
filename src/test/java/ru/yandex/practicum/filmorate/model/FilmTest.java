@@ -50,7 +50,7 @@ public class FilmTest {
 
     @Test
     void releaseDateNotNull() {
-        Film film = new Film(1, "аца", "пцупцу", 100);
+        Film film = new Film(1, "аца", "пцупцу", LocalDate.of(2010, 11, 25), 100);
         Set<ConstraintViolation<Film>> violations = validator.validate(film, Default.class, ValidationGroups.UpdateGroup.class, ValidationGroups.CreateGroup.class);
         assertThat(violations).hasSize(1);
         assertThat(violations).extracting(ConstraintViolation::getMessage).contains("Дата релиза должна быть");
