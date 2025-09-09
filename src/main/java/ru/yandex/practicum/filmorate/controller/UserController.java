@@ -1,67 +1,65 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.annotations.ValidationGroups;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.annotation.Marker;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
-
 
 import java.util.Collection;
 
-
+@AllArgsConstructor
 @Validated
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @GetMapping
-    public Collection<User> getAllUsers() {
+    public Collection<UserDto> findAll() {
         return userService.getAllUsers();
     }
 
-    @PostMapping
-    @Validated(ValidationGroups.CreateGroup.class)
-    public User createUser(@RequestBody @Valid User user) {
-        return userService.createUser(user);
+    @GetMapping("/{userId}")
+    public UserDto getUserById(@PathVariable Integer userId) {
+        return userService.getUserById(userId);
+    }
+
+    @GetMapping("{userId}/friends")
+    public Collection<UserDto> userFriends(@PathVariable Integer userId) {
+        return userService.getUserFriends(userId);
+    }
+
+    @GetMapping("/{userId}/friends/common/{otherId}")
+    public Collection<UserDto> commonFriends(@PathVariable Integer userId,
+                                             @PathVariable Integer otherId) {
+        return userService.getCommonFriends(userId, otherId);
     }
 
     @PutMapping
-    @Validated(ValidationGroups.UpdateGroup.class)
-    public User updateUser(@RequestBody @Valid User newUser) {
-        return userService.updateUser(newUser);
+    @Validated(Marker.OnUpdate.class)
+    public UserDto update(@RequestBody @Valid UserDto userDto) {
+        return userService.updateUser(userDto);
     }
 
-    @GetMapping("/{id}")
-    public User findById(int id) {
-        return userService.findUserById(id);
-    }
-
-    @PutMapping("/{id}/friends/{friendId}")
-    public void addToFriend(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
+    @PutMapping("/{userId}/friends/{friendId}")
+    public void addFriend(@PathVariable Integer userId,
+                          @PathVariable Integer friendId) {
         userService.addFriend(userId, friendId);
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}")
-    public void deleteFromFriends(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
-        userService.deleteFriend(userId, friendId);
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public void deleteFriend(@PathVariable Integer userId,
+                             @PathVariable Integer friendId) {
+        userService.removeFriend(userId, friendId);
     }
 
-    @GetMapping("/{id}/friends")
-    public Collection<User> listOfFriends(@PathVariable("id") int userId) {
-        return userService.showListOfFriends(userId);
-    }
-
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public Collection<User> listOfCommonFriends(@PathVariable("id") int userId, @PathVariable("otherId") int otherId) {
-        return userService.showListOfCommonFriends(userId, otherId);
+    @PostMapping
+    @Validated(Marker.OnCreate.class)
+    public UserDto addUser(@RequestBody @Valid UserDto userDtoRequest) {
+        return userService.addUser(userDtoRequest);
     }
 }
