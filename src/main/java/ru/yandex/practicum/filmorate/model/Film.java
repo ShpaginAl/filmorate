@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.annotations.ValidationGroups;
+import ru.yandex.practicum.filmorate.annotation.Marker;
+import ru.yandex.practicum.filmorate.annotation.NotBeforeSpecificDate;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -14,34 +12,39 @@ import java.util.Set;
 @Data
 public class Film {
 
-    @NotNull(message = "При обновлении ресурса id не может быть нулевым", groups = ValidationGroups.UpdateGroup.class)
-    private int id;
+    @NotNull(groups = Marker.OnUpdate.class)
+    private Integer id;
 
-    @NotBlank(message = "Название не может быть пустым")
+    @NotBlank(message = "Название не может быть пустым", groups = Marker.OnCreate.class)
     private String name;
 
-    @NotBlank(message = "описание не может быть пустым")
-    @Size(message = "Максимальная длина описания - 200 символов", max = 200)
+    @Size(max = 200, message = "Максимальная длина описания — 200 символов", groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
     private String description;
 
-    @NotNull(message = "Дата релиза должна быть")
+    @NotBeforeSpecificDate(message = "дата релиза — не раньше 28 декабря 1895 года", groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
+    @NotNull(message = "Дата релиза обязательна", groups = Marker.OnCreate.class)
     private LocalDate releaseDate;
 
-    @Positive(message = "продолжительность фильма должна быть положительным числом")
-    private int duration;
+    @Positive(message = "Продолжительность фильма должна быть положительным числом", groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
+    private Integer duration;
 
-    private HashSet<Integer> listOfLikes;
+    private Set<Integer> likes;
 
-    private String genre;
+    private Set<Genre> genres = new HashSet<>();
 
-    private String rating;
+    @NotNull(message = "Рейтинг Мпа обязателен", groups = Marker.OnCreate.class)
+    private Mpa mpa;
 
-    public Film(int id, String name, String description, LocalDate releaseDate, int duration) {
+    public Film() {
+    }
+
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Set<Genre> genres, Mpa mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.listOfLikes = new HashSet<Integer>();
+        this.genres = genres;
+        this.mpa = mpa;
     }
 }
